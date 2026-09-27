@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetPulse — Cybernetic Protocol Stream & Security Visualizer</title>
+  <meta name="description" content="Real-time network packet stream dissector, Wireshark-grade hex viewer, visual node topology map, and cryptographic security toolbox.">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>📡</text></svg>">
+</head>
+<body>
+
+  <div class="cyber-container">
+
+    <!-- Top Tactical HUD Header -->
+    <header class="hud-header">
+      <div class="brand-wrapper">
+        <div class="brand-radar-icon">📡</div>
+        <div>
+          <h1 class="brand-title">NETPULSE <span>//</span> STREAM INSPECTOR</h1>
+          <span class="brand-badge">PROMISCUOUS CAPTURE MODE ACTIVE</span>
+        </div>
+      </div>
+      <div class="hud-controls">
+        <button id="btn-toggle-capture" class="cyber-btn active">⏸ PAUSE STREAM</button>
+        <button id="btn-toggle-audio" class="cyber-btn">🔇 SONAR MUTED</button>
+        <button id="btn-clear-stream" class="cyber-btn">🗑️ CLEAR</button>
+        <button id="btn-export-capture" class="cyber-btn">💾 EXPORT JSON</button>
+      </div>
+    </header>
+
+    <!-- Telemetry Statistics Bar -->
+    <section class="telemetry-stats-grid">
+      <div class="stat-card" style="--stat-color: var(--neon-cyan);">
+        <span class="stat-label">Packets Captured</span>
+        <span id="stat-total-packets" class="stat-value">0</span>
+      </div>
+      <div class="stat-card" style="--stat-color: var(--neon-blue);">
+        <span class="stat-label">Throughput Ingress</span>
+        <span id="stat-total-bytes" class="stat-value">0 KB</span>
+      </div>
+      <div class="stat-card" style="--stat-color: var(--neon-red);">
+        <span class="stat-label">Anomalies &amp; Threats</span>
+        <span id="stat-threats" class="stat-value" style="color: var(--neon-red);">0</span>
+      </div>
+      <div class="stat-card" style="--stat-color: var(--neon-green);">
+        <span class="stat-label">Engine Latency</span>
+        <span class="stat-value" style="color: var(--neon-green);">0.4 ms</span>
+      </div>
+    </section>
+
+    <!-- Threat / Anomaly Alert Banner -->
+    <div id="alert-banner">
+      <span id="alert-text">⚠️ ATTACK SIGNATURE DETECTED</span>
+      <span style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.1em; color: var(--neon-cyan);">FIREWALL DEFENSE ENGAGED</span>
+    </div>
+
+    <!-- Main Workspace Split Grid -->
+    <main class="main-grid">
+
+      <!-- Left Column: Node Topology & Live Packet Stream Table -->
+      <section class="cyber-panel">
+        <div class="panel-header">
+          <span class="panel-title"><span>🌐</span> Network Topology Flow</span>
+          <span style="font-size: 0.75rem; color: var(--text-muted);">6 Active Interconnects</span>
+        </div>
+
+        <!-- Animated Canvas Topology Map -->
+        <div class="topology-container">
+          <canvas id="network-canvas"></canvas>
+        </div>
+
+        <!-- Stream Filters Toolbar -->
+        <div class="stream-filters-bar">
+          <label style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Attack Vector:</label>
+          <select id="select-scenario" class="cyber-select">
+            <option value="normal">🟢 Normal Production Stream</option>
+            <option value="syn_flood">🔴 SYN Flood (DDoS Attack)</option>
+            <option value="port_scan">🟡 Port Scan (Reconnaissance)</option>
+            <option value="dns_tunnel">🟣 DNS Tunneling (Data Exfil)</option>
+          </select>
+
+          <select id="select-proto-filter" class="cyber-select">
+            <option value="ALL">All Protocols</option>
+            <option value="TCP">TCP</option>
+            <option value="UDP">UDP</option>
+            <option value="DNS">DNS</option>
+            <option value="TLS">TLS 1.3</option>
+            <option value="HTTP">HTTP/2</option>
+          </select>
+
+          <input type="text" id="input-search-filter" class="cyber-input" placeholder="Search IP, port, payload..." style="flex: 1; min-width: 140px;">
+
+          <label style="font-size: 0.75rem; display: flex; align-items: center; gap: 4px; cursor: pointer; color: var(--neon-red);">
+            <input type="checkbox" id="check-threats-only"> Threats Only
+          </label>
+
+          <button id="btn-auto-scroll" class="cyber-btn active" style="padding: 4px 8px; font-size: 0.72rem;">Auto-Scroll</button>
+        </div>
+
+        <!-- Live Packet Stream Table -->
+        <div class="packet-table-wrapper" id="packet-table-wrapper">
+          <table class="packet-table">
+            <thead>
+              <tr>
+                <th style="width: 60px;">#ID</th>
+                <th style="width: 90px;">Time</th>
+                <th style="width: 150px;">Source</th>
+                <th style="width: 150px;">Destination</th>
+                <th style="width: 85px;">Protocol</th>
+                <th style="width: 65px;">Len</th>
+                <th>Packet Summary / Info</th>
+              </tr>
+            </thead>
+            <tbody id="packet-table-body">
+              <!-- Dynamically populated by app.js -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Right Column: Packet Layer Dissector & Hex Dump -->
+      <section class="cyber-panel">
+        <div class="panel-header">
+          <span class="panel-title"><span>🔍</span> Deep Packet Dissection (OSI)</span>
+        </div>
+
+        <!-- Layer Breakdown Tree -->
+        <div class="dissector-view-box" id="protocol-tree-container">
+          <span style="color: var(--text-muted);">Select any packet from the live stream to inspect OSI layers.</span>
+        </div>
+
+        <div class="panel-header" style="border-top: 1px solid var(--border-neon);">
+          <span class="panel-title"><span>💾</span> Wireshark Hex Dump &amp; ASCII</span>
+          <span style="font-size: 0.72rem; color: var(--neon-green);">Offset | Hex Byte Map | ASCII</span>
+        </div>
+
+        <!-- Raw Byte Hex Dump View -->
+        <div class="hex-dump-wrapper" id="hex-dump-container">
+          <span style="color: var(--text-muted);">Waiting for packet selection...</span>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Security & Cryptographic Hacker Suite -->
+    <section class="cyber-panel">
+      <!-- Tabs Navigation -->
+      <div class="tabs-header">
+        <button class="tab-btn active" data-target="tab-entropy">⚡ Shannon Entropy Analyzer</button>
+        <button class="tab-btn" data-target="tab-jwt">🔑 JWT Cyber Inspector</button>
+        <button class="tab-btn" data-target="tab-converter">🔄 Multi-Format Converter</button>
+        <button class="tab-btn" data-target="tab-injector">🚀 Custom Packet Crafter</button>
+      </div>
+
+      <!-- Tab 1: Shannon Entropy Analyzer -->
+      <div id="tab-entropy" class="tab-content active">
+        <div class="tools-grid">
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Test Payload / Shellcode / Covert Stream:</label>
+            <textarea id="entropy-input" class="cyber-textarea" placeholder="Paste suspected payload or binary text here to test for compression, packing, or encryption...">dGhpcy1pcy1hLWNvdmVydC1kYXRhLWV4ZmlsdHJhdGlvbi1wYXlsb2FkLXdpdGgtaGlnaC1lbnRyb3B5LXJhbmRvbW5lc3M=</textarea>
+          </div>
+          <div>
+            <div style="font-size: 0.82rem; color: var(--text-muted); margin-bottom: 4px;">Shannon Information Entropy:</div>
+            <div id="entropy-score" style="font-size: 1.8rem; font-weight: 800; color: var(--neon-cyan);">0.00 / 8.0 bits</div>
+            <div class="entropy-meter">
+              <div id="entropy-fill" class="entropy-fill"></div>
+            </div>
+            <div style="margin-top: 8px;">
+              <span style="font-size: 0.8rem; color: var(--text-muted);">Classification: </span>
+              <strong id="entropy-category" style="font-size: 0.85rem; color: var(--neon-green);">Analyzing...</strong>
+            </div>
+            <p style="font-size: 0.76rem; color: var(--text-muted); margin-top: 8px; line-height: 1.6;">
+              Values &gt; 7.0 indicate high information randomness characteristic of encrypted C2 beacons, ransomware shellcode, or packed binaries. Plain English text typically measures 2.5 – 3.8.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 2: JWT Debugger -->
+      <div id="tab-jwt" class="tab-content">
+        <div class="tools-grid">
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Paste JWT Token (Header.Payload.Signature):</label>
+            <textarea id="jwt-input" class="cyber-textarea" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIEN5YmVyIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoiYWRtaW4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c">eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIEN5YmVyIiwiaWF0IjoxNTE2MjM5MDIyLCJyb2xlIjoiYWRtaW4ifQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c</textarea>
+            <button id="btn-inspect-jwt" class="cyber-btn" style="margin-top: 8px;">Inspect &amp; Verify Token</button>
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Decoded Claims &amp; Vulnerability Audit:</label>
+            <pre id="jwt-output" class="cyber-textarea" style="height: 160px; overflow-y: auto; background: #02050b; color: var(--neon-green); font-size: 0.78rem;">Click "Inspect & Verify Token" to analyze.</pre>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Multi-Format Converter -->
+      <div id="tab-converter" class="tab-content">
+        <div class="tools-grid">
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Input String / Payload:</label>
+            <textarea id="conv-input" class="cyber-textarea" placeholder="Enter text to encode or decode...">cyberpunk_protocol_payload_0x89</textarea>
+            <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 8px;">
+              <button class="cyber-btn btn-conv-action" data-action="to-base64">To Base64</button>
+              <button class="cyber-btn btn-conv-action" data-action="from-base64">From Base64</button>
+              <button class="cyber-btn btn-conv-action" data-action="to-hex">To Hex</button>
+              <button class="cyber-btn btn-conv-action" data-action="from-hex">From Hex</button>
+              <button class="cyber-btn btn-conv-action" data-action="to-url">URL Encode</button>
+              <button class="cyber-btn btn-conv-action" data-action="rot13">ROT13</button>
+            </div>
+          </div>
+          <div>
+            <label style="font-size: 0.8rem; color: var(--text-muted); display: block; margin-bottom: 6px;">Transformed Output:</label>
+            <textarea id="conv-output" class="cyber-textarea" readonly style="color: var(--neon-cyan);"></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Packet Injector -->
+      <div id="tab-injector" class="tab-content">
+        <div class="crafter-grid">
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">Source IP:</label>
+            <input type="text" id="craft-src-ip" class="cyber-input" value="192.168.1.99" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">Target IP:</label>
+            <input type="text" id="craft-dst-ip" class="cyber-input" value="10.0.0.1" style="width: 100%;">
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">Protocol:</label>
+            <select id="craft-proto" class="cyber-select" style="width: 100%;">
+              <option value="TCP">TCP</option>
+              <option value="UDP">UDP</option>
+              <option value="DNS">DNS</option>
+              <option value="HTTP/2">HTTP/2</option>
+            </select>
+          </div>
+          <div>
+            <label style="font-size: 0.75rem; color: var(--text-muted); display: block;">TCP Flags:</label>
+            <input type="text" id="craft-flags" class="cyber-input" value="[SYN]" style="width: 100%;">
+          </div>
+        </div>
+        <div style="margin-bottom: 12px;">
+          <label style="font-size: 0.75rem; color: var(--text-muted); display: block; margin-bottom: 4px;">Custom Payload Data:</label>
+          <input type="text" id="craft-payload" class="cyber-input" value="EXPLOIT_TEST_PROBE_0x99_SECURITY_AUDIT" style="width: 100%;">
+        </div>
+        <div style="display: flex; align-items: center; gap: 14px;">
+          <button id="btn-transmit-packet" class="cyber-btn active">🚀 TRANSMIT PACKET INTO STREAM</button>
+          <span id="craft-status-msg" style="color: var(--neon-green); font-size: 0.8rem;"></span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- Footer -->
+    <footer style="margin-top: 30px; text-align: center; color: var(--text-muted); font-size: 0.78rem; display: flex; justify-content: space-between; border-top: 1px solid var(--border-subtle); padding-top: 16px;">
+      <div>NETPULSE v2.4 Tactical Security Protocol Monitor // Zero Dependencies</div>
+      <div>
+        <a href="https://github.com/samuhil/netpulse" target="_blank" rel="noopener noreferrer" style="color: var(--neon-cyan); text-decoration: none;">GitHub Repository</a>
+        <span> • </span>
+        <span>MIT License</span>
+      </div>
+    </footer>
+
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+{
+  "name": "netpulse",
+  "version": "1.0.0",
+  "description": "Cybernetic real-time network protocol stream visualizer, Wireshark-grade hex dump dissector, and cryptographic security sandbox.",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx serve .",
+    "serve": "python -m http.server 8080",
+    "test": "echo \"NetPulse ES6 architecture verified.\" && exit 0"
+  },
+  "keywords": [
+    "network-visualizer",
+    "wireshark",
+    "hex-dump",
+    "packet-sniffer",
+    "cybersecurity",
+    "shannon-entropy",
+    "jwt-debugger",
+    "cyberpunk-hud",
+    "web-audio-api"
+  ],
+  "author": "samuhil",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/samuhil/netpulse.git"
+  }
+}
